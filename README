@@ -1,3 +1,9 @@
 Hello World ;)
 Hello from Michael
-git commit -m "comment of change"
+save to git:
+git commit -a
+git push
+
+get new version:
+git fetch
+git merge 
