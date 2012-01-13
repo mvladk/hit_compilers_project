@@ -1,0 +1,6 @@
+aaa := 7;
+bbb := 8;
+
+ccc := aaa + bbb;
+echo ccc;
+
