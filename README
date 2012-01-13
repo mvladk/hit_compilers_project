@@ -1,2 +1,9 @@
 Hello World ;)
-AA huina
+Hello from Michael
+save to git:
+git commit -a
+git push
+
+get new version:
+git fetch
+git merge 
