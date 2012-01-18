@@ -456,11 +456,11 @@ YY_parse_CONSTRUCTOR_CODE;
  #line 352 "/usr/share/bison++/bison.cc"
 
 
-#define	YYFINAL		13
+#define	YYFINAL		15
 #define	YYFLAG		-32768
 #define	YYNTBASE	9
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 263 ? yytranslate[x] : 14)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 263 ? yytranslate[x] : 15)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -494,63 +494,64 @@ static const char yytranslate[] = {     0,
 
 #if YY_parse_DEBUG != 0
 static const short yyprhs[] = {     0,
-     0,     3,     4,     7,     9,    11,    14
+     0,     3,     6,     7,    10,    12,    14,    17,    21
 };
 
 static const short yyrhs[] = {     8,
-    10,     0,     0,    10,    11,     0,    12,     0,    13,     0,
-     4,     5,     0,     6,     7,     3,     0
+    10,     0,    14,    10,     0,     0,    10,    11,     0,    12,
+     0,    13,     0,     4,     5,     0,     6,     7,     3,     0,
+     0
 };
 
 #endif
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    28,    32,    33,    37,    39,    43,    50
+    28,    30,    34,    35,    39,    41,    45,    52,    58
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","NUMBER","TOKHEAT",
 "STATE","TOKTARGET","TOKTEMPERATURE","start_prog","program","commands","command",
-"heat_switch","target_set",""
+"heat_switch","target_set","error_program",""
 };
 #endif
 
 static const short yyr1[] = {     0,
-     9,    10,    10,    11,    11,    12,    13
+     9,     9,    10,    10,    11,    11,    12,    13,    14
 };
 
 static const short yyr2[] = {     0,
-     2,     0,     2,     1,     1,     2,     3
+     2,     2,     0,     2,     1,     1,     2,     3,     0
 };
 
-static const short yydefact[] = {     0,
-     2,     1,     0,     0,     3,     4,     5,     6,     0,     7,
-     0,     0,     0
+static const short yydefact[] = {     9,
+     3,     3,     1,     2,     0,     0,     4,     5,     6,     7,
+     0,     8,     0,     0,     0
 };
 
-static const short yydefgoto[] = {    11,
-     2,     5,     6,     7
+static const short yydefgoto[] = {    13,
+     3,     7,     8,     9,     2
 };
 
 static const short yypact[] = {    -7,
--32768,    -4,    -2,    -3,-32768,-32768,-32768,-32768,     2,-32768,
-     6,     7,-32768
+-32768,-32768,    -4,    -4,    -2,    -3,-32768,-32768,-32768,-32768,
+     2,-32768,     6,     7,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,-32768,-32768,-32768
+     8,-32768,-32768,-32768,-32768
 };
 
 
-#define	YYLAST		7
+#define	YYLAST		10
 
 
-static const short yytable[] = {     3,
-     1,     4,     8,     9,    10,    12,    13
+static const short yytable[] = {     5,
+     1,     6,    10,    11,    12,    14,    15,     0,     0,     4
 };
 
 static const short yycheck[] = {     4,
-     8,     6,     5,     7,     3,     0,     0
+     8,     6,     5,     7,     3,     0,     0,    -1,    -1,     2
 };
 
 #line 352 "/usr/share/bison++/bison.cc"
@@ -1046,16 +1047,22 @@ YYLABEL(yyreduce)
 
   switch (yyn) {
 
-case 6:
-#line 45 "exprs.yacc"
+case 7:
+#line 47 "exprs.yacc"
 {
 		printf("\tHeat turned on or off\n");
 	;
     break;}
-case 7:
-#line 52 "exprs.yacc"
+case 8:
+#line 54 "exprs.yacc"
 {
 		printf("\tTemperature set XXX\n");
+	;
+    break;}
+case 9:
+#line 59 "exprs.yacc"
+{
+	  yyerror("Syntax error"); 
 	;
     break;}
 }
@@ -1262,4 +1269,4 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 57 "exprs.yacc"
+#line 63 "exprs.yacc"

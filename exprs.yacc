@@ -27,6 +27,8 @@ yyparse();
 
 program:
 	start_prog commands
+	|
+	error_program commands
 	;
 
 commands: /* empty */
@@ -53,4 +55,8 @@ target_set:
 		printf("\tTemperature set XXX\n");
 	}
 	;
-
+error_program:
+	{
+	  yyerror("Syntax error"); 
+	}
+	;
