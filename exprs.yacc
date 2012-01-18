@@ -21,27 +21,68 @@ yyparse();
 
 %}
 
-%token NUMBER TOKHEAT STATE TOKTARGET TOKTEMPERATURE start_prog
+%token start_prog start_com end_prog const id number exception integer real if then end_loop embed end_embed while raise ar_op rel_op
 
 %%
 
-program:
-	start_prog commands
+PROGRAM:
+	start_prog DEFINITIONS start_com COMMANDS end_prog
 	|
-	error_program commands
+	error_program COMMANDS
 	;
 
-commands: /* empty */
-	| commands command
-	;
-
-
-command:
-	heat_switch
+DEFINITIONS:
 	|
-	target_set
+	DEFINITIONS
+	|
+	DEFINITION
+	;
+DEFINITION:
+	TYPE  ID_LIST  
+	///| 
+	//TYPE const id := number 
+	//| 
+	//id : exception
 	;
 
+TYPE:
+	integer  
+	|
+	real
+	;
+
+COMMANDS:
+	COMMAND 
+	| 
+	COMMANDS
+	;
+
+
+COMMAND:
+	id := EXPRESSION 
+	|  
+        if CONDITION then COMMANDS else COMMANDS end_loop  
+	|  
+	loop COMMANDS while CONDITION end_loop 
+	|
+	embed DEFINITIONS start_com COMMANDS end_embed
+        raise id
+	;
+
+EXPRESSION:
+	EXPRESSION ar_op EXPRESSION  
+	| 
+        number  
+	|  
+	id  
+	| 
+	(EXPRESSION)
+	;
+
+CONDITION:
+	EXPRESSION  rel_op  EXPRESSION
+	;
+/*
 heat_switch:
 	TOKHEAT STATE 
 	{
@@ -55,6 +96,7 @@ target_set:
 		printf("\tTemperature set XXX\n");
 	}
 	;
+*/
 error_program:
 	{
 	  yyerror("Syntax error"); 

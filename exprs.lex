@@ -1,16 +1,33 @@
 %{
 #include <stdio.h>
 #include "y.exprs.h"
+int words, chars;
 %}
+DIGIT [0-9]
+ID    [a-z][a-z0-9]*
 %%
-[0-9]+                  return NUMBER;
-heat                    return TOKHEAT;
-on|off                  return STATE;
-target                  return TOKTARGET;
-temperature             return TOKTEMPERATURE;
-start_prog             return start_prog;
-\n                      /* ignore end of line */;
-[ \t]+                  /* ignore whitespace */;
+
+0|[1-9]{DIGIT}*	{
+		    return yytext; //fprintf(yyout,"\nInteger:%s\n",yytext);
+		}
+0"."{DIGIT}+|[1-9]{DIGIT}*"."{DIGIT}+    {fprintf(yyout,"\nReal:%s",yytext);}
+"+"|"/"|":="|"="|"-"|"*"|";"   {fprintf(yyout,"\nAn operator:%s",yytext);}
+start_prog             return 1;
+
+start_com|end_prog|const|exception        {
+                       printf( "A keyword: %s\n", yytext );
+                       }
+if|then|else|loop|end_loop|embed|end_embed|raise|while|function|const|id|number|exception|integer|real|embed|end_embed|ar_op|rel_op  {
+                       printf( "A keyword: %s\n", yytext );
+                       }
+[a-zA-Z]+       {words++;chars += yyleng; fprintf(yyout,"\nVar name:%s\n",yytext);}
+"{"[^}\n]*"}" ;    /* eat up one-line comments */
+
+[ \t\n]+  ;        /* eat up whitespace */
+
+.                             fprintf(yyout,"\nUnrecognized character: %s",yytext);
+
+
 %%
 void main(int argc, char* argv[])
 {

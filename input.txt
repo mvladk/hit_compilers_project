@@ -1,5 +1,5 @@
 start_prog 
-heat on
-heat off
-target temperature 25
-heat on
+
+start_com 
+
+end_prog
