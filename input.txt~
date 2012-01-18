@@ -1,5 +1,0 @@
-aaa := 7;
-bbb := 8;
-/* this is comment !! */
-ccc := aaa + bbb;
-

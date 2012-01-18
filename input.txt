@@ -1,6 +1,5 @@
-aaa := 7;
-bbb := 8;
-/* this is comment !! */
-ccc := aaa + bbb;
-echo ccc;
-
+start_prog 
+heat on
+heat off
+target temperature 25
+heat on
