@@ -6,7 +6,7 @@ clear;
 echo "FLEX-------------------------------------";
 flex -o./out/exprs.yy.c exprs.lex;
 echo "YACC-------------------------------------";
-yacc -o./out/y.exprs.c -d exprs.yacc;  
+bison -o./out/y.exprs.c -d exprs.yacc;  
 echo "c++-------------------------------------";
 ##c++ -o./out/delcoms.out ./out/delcoms.yy.c;
 c++ -o./out/exprs.out ./out/exprs.yy.c ./out/y.exprs.c; 

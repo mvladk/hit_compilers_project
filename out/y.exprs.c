@@ -109,14 +109,21 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
         //exit(1);
     }
 
+    #define TOKENPASTE(x, y) x ## y
+#define TOKENPASTE2(x, y) TOKENPASTE(x, y)
+#define foreach(i, list) typedef typeof(list) TOKENPASTE2(T,__LINE__); \
+                    for(TOKENPASTE2(T,__LINE__)::iterator i = list.begin(); i != list.end(); i++)
+
     class oper_t { // abstract
         protected: oper_t() {}
         public: virtual ~oper_t() {}
+        virtual void print(int indent=0) =0;
     };
 
     class expr_t { // abstract
         protected: expr_t() {}
         public: virtual ~expr_t() {}
+        virtual void print() =0;
     };
 
     class block : public oper_t {
@@ -133,11 +140,24 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
             block() {}
             block(oper_t* op) { append(op); }
             block(oper_t* op1, oper_t* op2) { append(op1); append(op2); }
+        int size() { return ops.size(); }
+        virtual void print(int indent=0) {
+            foreach(i, ops) {
+                std::cout << std::string(indent, '\t');
+                (*i)->print(indent);
+            }
+        }
+        virtual ~block() { foreach(i, ops) delete *i; }
     };
 
     class exprop : public oper_t {
         expr_t* expr;
         public: exprop(expr_t* expr) : expr(expr) {}
+        virtual void print(int indent=0) {
+            expr->print();
+            std::cout << ";" << std::endl;
+        }
+        virtual ~exprop() { delete expr; }
     };
 
     class ifop : public oper_t {
@@ -145,21 +165,47 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
         block thenops, elseops;
         public: ifop(expr_t* cond, oper_t* thenops, oper_t* elseops) :
                 cond(cond), thenops(thenops), elseops(elseops) {}
+        virtual void print(int indent=0) {
+            std::cout << "if "; cond->print();  std::cout << " {" << std::endl;
+            thenops.print(indent+1);
+            if (elseops.size()) {
+                std::cout << std::string(indent, '\t') << "} else {" << std::endl;
+                elseops.print(indent+1);
+            }
+            std::cout << std::string(indent, '\t') << "}" << std::endl;
+        }
+        virtual ~ifop() { delete cond; }
     };
 
     class whileop : public oper_t {
         expr_t* cond;
         block ops;
         public: whileop(expr_t* cond, oper_t* ops) : cond(cond), ops(ops) {}
+        virtual void print(int indent=0) {
+            std::cout << "while "; cond->print();  std::cout << " {" << std::endl;
+            ops.print(indent+1);
+            std::cout << std::string(indent, '\t') << "}" << std::endl;
+        }
+        virtual ~whileop() { delete cond; }
     };
 
-    class exitop : public oper_t {};
+    class exitop : public oper_t {
+        virtual void print(int indent=0) { std::cout << "exit;" << std::endl; }
+    };
 
     class binary : public expr_t {
         const char* op;
         expr_t *arg1, *arg2;
         public: binary(const char* op, expr_t *arg1, expr_t *arg2) :
                 op(op), arg1(arg1), arg2(arg2) {}
+        virtual void print() {
+            std::cout<<"(";
+            arg1->print();
+            std::cout<<op;
+            arg2->print();
+            std::cout<<")";
+        }
+        virtual ~binary() { delete arg1; delete arg2; }
     };
 
     class assign : public expr_t {
@@ -167,12 +213,16 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
         expr_t* value;
         public: assign(const std::string& name, expr_t* value) :
                 name(name), value(value) {}
+        virtual void print() { std::cout<<name<<" = "; value->print(); }
+        virtual ~assign() { delete value; }
     };
 
     class unary : public expr_t {
         const char* op;
         expr_t* arg;
         public: unary(const char* op, expr_t* arg) : op(op), arg(arg) {}
+        virtual void print() { std::cout<<op; arg->print(); }
+        virtual ~unary() { delete arg; }
     };
 
     class funcall : public expr_t {
@@ -181,11 +231,22 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
         public: funcall(const std::string& name,
                 const std::list<expr_t*>& args) :
                 name(name), args(args) {}
+        virtual void print() {
+            std::cout<<name<<"(";
+            foreach(i,args) {
+                if (i!=args.begin())
+                    std::cout<<", ";
+                (*i)->print();
+            }
+            std::cout<<")";
+        }
+        virtual ~funcall() { foreach(i,args) delete *i; }
     };
 
     class value : public expr_t {
         std::string text;
         public: value(const std::string& text) : text(text) {}
+        virtual void print() { std::cout<<text; }
     };
 
 // возможные значения символа: строка, оператор, выражение, список аргументов
@@ -627,10 +688,10 @@ static const short yyrhs[] = {    29,
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-   121,   124,   125,   128,   129,   130,   131,   132,   135,   136,
-   137,   140,   140,   142,   143,   145,   146,   147,   148,   149,
-   150,   151,   154,   155,   156,   159,   160,   161,   164,   165,
-   166,   167,   168,   169,   172,   173,   174,   177,   178
+   182,   185,   186,   189,   190,   191,   192,   193,   196,   197,
+   198,   201,   201,   203,   204,   206,   207,   208,   209,   210,
+   211,   212,   215,   216,   217,   220,   221,   222,   225,   226,
+   227,   228,   229,   230,   233,   234,   235,   238,   239
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","IF","ELSE",
@@ -1211,124 +1272,128 @@ YYLABEL(yyreduce)
 
   switch (yyn) {
 
+case 1:
+#line 182 "exprs.yacc"
+{ yyvsp[0].oper->print(); delete yyvsp[0].oper; ;
+    break;}
 case 3:
-#line 125 "exprs.yacc"
+#line 186 "exprs.yacc"
 { yyval.oper = new block(yyvsp[-1].oper, yyvsp[0].oper); ;
     break;}
 case 4:
-#line 128 "exprs.yacc"
+#line 189 "exprs.yacc"
 { yyval.oper = yyvsp[-1].oper; ;
     break;}
 case 5:
-#line 129 "exprs.yacc"
+#line 190 "exprs.yacc"
 { yyval.oper = new exprop(yyvsp[-1].expr); ;
     break;}
 case 6:
-#line 130 "exprs.yacc"
+#line 191 "exprs.yacc"
 { yyval.oper = new ifop(yyvsp[-4].expr, yyvsp[-2].oper, yyvsp[0].oper); ;
     break;}
 case 7:
-#line 131 "exprs.yacc"
+#line 192 "exprs.yacc"
 { yyval.oper = new whileop(yyvsp[-2].expr, yyvsp[0].oper); ;
     break;}
 case 8:
-#line 132 "exprs.yacc"
+#line 193 "exprs.yacc"
 { yyval.oper = new exitop(); ;
     break;}
 case 9:
-#line 135 "exprs.yacc"
+#line 196 "exprs.yacc"
 { yyval.oper = new ifop(yyvsp[-2].expr, yyvsp[0].oper, new block()); ;
     break;}
 case 10:
-#line 136 "exprs.yacc"
+#line 197 "exprs.yacc"
 { yyval.oper = new ifop(yyvsp[-4].expr, yyvsp[-2].oper, yyvsp[0].oper); ;
     break;}
 case 11:
-#line 137 "exprs.yacc"
+#line 198 "exprs.yacc"
 { yyval.oper = new whileop(yyvsp[-2].expr, yyvsp[0].oper); ;
     break;}
 case 15:
-#line 143 "exprs.yacc"
+#line 204 "exprs.yacc"
 { yyval.expr = new assign(yyvsp[-2].str, yyvsp[0].expr); ;
     break;}
 case 17:
-#line 146 "exprs.yacc"
+#line 207 "exprs.yacc"
 { yyval.expr = new binary("==", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 18:
-#line 147 "exprs.yacc"
+#line 208 "exprs.yacc"
 { yyval.expr = new binary("<=", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 19:
-#line 148 "exprs.yacc"
+#line 209 "exprs.yacc"
 { yyval.expr = new binary(">=", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 20:
-#line 149 "exprs.yacc"
+#line 210 "exprs.yacc"
 { yyval.expr = new binary("!=", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 21:
-#line 150 "exprs.yacc"
+#line 211 "exprs.yacc"
 { yyval.expr = new binary(">", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 22:
-#line 151 "exprs.yacc"
+#line 212 "exprs.yacc"
 { yyval.expr = new binary("<", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 24:
-#line 155 "exprs.yacc"
+#line 216 "exprs.yacc"
 { yyval.expr = new binary("+", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 25:
-#line 156 "exprs.yacc"
+#line 217 "exprs.yacc"
 { yyval.expr = new binary("-", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 27:
-#line 160 "exprs.yacc"
+#line 221 "exprs.yacc"
 { yyval.expr = new binary("*", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 28:
-#line 161 "exprs.yacc"
+#line 222 "exprs.yacc"
 { yyval.expr = new binary("/", yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 29:
-#line 164 "exprs.yacc"
+#line 225 "exprs.yacc"
 { yyval.expr = new value(yyvsp[0].str); ;
     break;}
 case 30:
-#line 165 "exprs.yacc"
+#line 226 "exprs.yacc"
 { yyval.expr = new unary("-", yyvsp[0].expr); ;
     break;}
 case 31:
-#line 166 "exprs.yacc"
+#line 227 "exprs.yacc"
 { yyval.expr = new unary("!", yyvsp[0].expr); ;
     break;}
 case 32:
-#line 167 "exprs.yacc"
+#line 228 "exprs.yacc"
 { yyval.expr = yyvsp[-1].expr; ;
     break;}
 case 33:
-#line 168 "exprs.yacc"
+#line 229 "exprs.yacc"
 { yyval.expr = new value(yyvsp[0].str); ;
     break;}
 case 34:
-#line 169 "exprs.yacc"
+#line 230 "exprs.yacc"
 { yyval.expr=new funcall(yyvsp[-3].str, yyvsp[-1].args); ;
     break;}
 case 35:
-#line 172 "exprs.yacc"
+#line 233 "exprs.yacc"
 { yyval.args.clear(); ;
     break;}
 case 36:
-#line 173 "exprs.yacc"
+#line 234 "exprs.yacc"
 { yyval.args.clear(); yyval.args.push_back(yyvsp[0].expr); ;
     break;}
 case 37:
-#line 174 "exprs.yacc"
+#line 235 "exprs.yacc"
 { yyval.args = yyvsp[-2].args; yyval.args.push_back(yyvsp[0].expr); ;
     break;}
 case 39:
-#line 178 "exprs.yacc"
+#line 239 "exprs.yacc"
 { yyval.expr=new value('"'+replaceAll(yyvsp[0].str, "\n", "\\n")+'"'); ;
     break;}
 }
@@ -1535,6 +1600,6 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 181 "exprs.yacc"
+#line 242 "exprs.yacc"
 
 int main() { return yyparse(); }	

@@ -12,4 +12,4 @@ echo "c++-------------------------------------";
 c++ -o./out/exprs.out ./out/exprs.yy.c ./out/y.exprs.c; 
 ##./out/delcoms.out input.txt ./out/input_clean.txt;
 echo "RUN=====================================";
-./out/exprs.out;
+./out/exprs.out < input.txt;

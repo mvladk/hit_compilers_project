@@ -8,7 +8,7 @@
         //exit(1);
     }
 
-#define TOKENPASTE(x, y) x ## y
+    #define TOKENPASTE(x, y) x ## y
 #define TOKENPASTE2(x, y) TOKENPASTE(x, y)
 #define foreach(i, list) typedef typeof(list) TOKENPASTE2(T,__LINE__); \
                     for(TOKENPASTE2(T,__LINE__)::iterator i = list.begin(); i != list.end(); i++)
@@ -148,6 +148,24 @@
         virtual void print() { std::cout<<text; }
     };
 
+// возможные значения символа: строка, оператор, выражение, список аргументов
+    typedef struct {
+        std::string str;
+        oper_t* oper;
+        expr_t* expr;
+        std::list<expr_t*> args;
+    } YYSTYPE;
+    #define YYSTYPE YYSTYPE
+
+// глобальная замена
+    std::string replaceAll(const std::string& where, const std::string& what, const std::string& withWhat) {
+        std::string result = where;
+        while(1) {
+            int pos = result.find(what);
+            if (pos==-1) return result;
+            result.replace(pos, what.size(), withWhat);
+        }
+    }
 %}
 
 %token IF ELSE WHILE EXIT
@@ -161,7 +179,7 @@
 
 %%
 
-PROGRAM: OPS                            { $1->print(); delete $1; }                            // обработка дерева программы
+PROGRAM: OPS                            { $1->print(); delete $1; } // обработка дерева программы
 ;
 
 OPS:    OP                              // inherit

@@ -8,14 +8,21 @@
         //exit(1);
     }
 
+    #define TOKENPASTE(x, y) x ## y
+#define TOKENPASTE2(x, y) TOKENPASTE(x, y)
+#define foreach(i, list) typedef typeof(list) TOKENPASTE2(T,__LINE__); \
+                    for(TOKENPASTE2(T,__LINE__)::iterator i = list.begin(); i != list.end(); i++)
+
     class oper_t { // abstract
         protected: oper_t() {}
         public: virtual ~oper_t() {}
+        virtual void print(int indent=0) =0;
     };
 
     class expr_t { // abstract
         protected: expr_t() {}
         public: virtual ~expr_t() {}
+        virtual void print() =0;
     };
 
     class block : public oper_t {
@@ -32,11 +39,24 @@
             block() {}
             block(oper_t* op) { append(op); }
             block(oper_t* op1, oper_t* op2) { append(op1); append(op2); }
+        int size() { return ops.size(); }
+        virtual void print(int indent=0) {
+            foreach(i, ops) {
+                std::cout << std::string(indent, '\t');
+                (*i)->print(indent);
+            }
+        }
+        virtual ~block() { foreach(i, ops) delete *i; }
     };
 
     class exprop : public oper_t {
         expr_t* expr;
         public: exprop(expr_t* expr) : expr(expr) {}
+        virtual void print(int indent=0) {
+            expr->print();
+            std::cout << ";" << std::endl;
+        }
+        virtual ~exprop() { delete expr; }
     };
 
     class ifop : public oper_t {
@@ -44,21 +64,47 @@
         block thenops, elseops;
         public: ifop(expr_t* cond, oper_t* thenops, oper_t* elseops) :
                 cond(cond), thenops(thenops), elseops(elseops) {}
+        virtual void print(int indent=0) {
+            std::cout << "if "; cond->print();  std::cout << " {" << std::endl;
+            thenops.print(indent+1);
+            if (elseops.size()) {
+                std::cout << std::string(indent, '\t') << "} else {" << std::endl;
+                elseops.print(indent+1);
+            }
+            std::cout << std::string(indent, '\t') << "}" << std::endl;
+        }
+        virtual ~ifop() { delete cond; }
     };
 
     class whileop : public oper_t {
         expr_t* cond;
         block ops;
         public: whileop(expr_t* cond, oper_t* ops) : cond(cond), ops(ops) {}
+        virtual void print(int indent=0) {
+            std::cout << "while "; cond->print();  std::cout << " {" << std::endl;
+            ops.print(indent+1);
+            std::cout << std::string(indent, '\t') << "}" << std::endl;
+        }
+        virtual ~whileop() { delete cond; }
     };
 
-    class exitop : public oper_t {};
+    class exitop : public oper_t {
+        virtual void print(int indent=0) { std::cout << "exit;" << std::endl; }
+    };
 
     class binary : public expr_t {
         const char* op;
         expr_t *arg1, *arg2;
         public: binary(const char* op, expr_t *arg1, expr_t *arg2) :
                 op(op), arg1(arg1), arg2(arg2) {}
+        virtual void print() {
+            std::cout<<"(";
+            arg1->print();
+            std::cout<<op;
+            arg2->print();
+            std::cout<<")";
+        }
+        virtual ~binary() { delete arg1; delete arg2; }
     };
 
     class assign : public expr_t {
@@ -66,12 +112,16 @@
         expr_t* value;
         public: assign(const std::string& name, expr_t* value) :
                 name(name), value(value) {}
+        virtual void print() { std::cout<<name<<" = "; value->print(); }
+        virtual ~assign() { delete value; }
     };
 
     class unary : public expr_t {
         const char* op;
         expr_t* arg;
         public: unary(const char* op, expr_t* arg) : op(op), arg(arg) {}
+        virtual void print() { std::cout<<op; arg->print(); }
+        virtual ~unary() { delete arg; }
     };
 
     class funcall : public expr_t {
@@ -80,11 +130,22 @@
         public: funcall(const std::string& name,
                 const std::list<expr_t*>& args) :
                 name(name), args(args) {}
+        virtual void print() {
+            std::cout<<name<<"(";
+            foreach(i,args) {
+                if (i!=args.begin())
+                    std::cout<<", ";
+                (*i)->print();
+            }
+            std::cout<<")";
+        }
+        virtual ~funcall() { foreach(i,args) delete *i; }
     };
 
     class value : public expr_t {
         std::string text;
         public: value(const std::string& text) : text(text) {}
+        virtual void print() { std::cout<<text; }
     };
 
 // возможные значения символа: строка, оператор, выражение, список аргументов
@@ -118,7 +179,7 @@
 
 %%
 
-PROGRAM: OPS                            // обработка дерева программы
+PROGRAM: OPS                            { $1->print(); delete $1; } // обработка дерева программы
 ;
 
 OPS:    OP                              // inherit
