@@ -9,7 +9,7 @@ echo "YACC-------------------------------------";
 yacc -o./out/y.exprs.c -d exprs.yacc;  
 echo "CC-------------------------------------";
 ##cc -o./out/delcoms.out ./out/delcoms.yy.c;
-cc -o./out/exprs.out ./out/exprs.yy.c ./out/y.exprs.c; 
+c++ -o./out/exprs.out ./out/exprs.yy.c ./out/y.exprs.c; 
 ##./out/delcoms.out input.txt ./out/input_clean.txt;
 echo "RUN=====================================";
 ./out/exprs.out ./input.txt;

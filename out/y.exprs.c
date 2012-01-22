@@ -100,173 +100,42 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
  #line 88 "/usr/share/bison++/bison.cc"
 #line 1 "exprs.yacc"
 
+
     #include <iostream>
-    #include <list>
+    #include <string>
+    #include <sstream>
     extern int yylineno;
     extern int yylex();
+    const int MAXAR = 1000;
+    struct one_token {
+      char * token_type;
+      std::string lexeme;
+      int line;
+    }  onetoken;
+      /*
+    class token_list
+    {
+	one_token token_array[MAXAR];
+        int i=0;
+	public:
+	void token_print(char *s,std::string l) {      
+	  this->token_array[i].token_type=s;
+	  this->i++;
+	  std::cerr << "token type: "<< tok1.token_type << ", lexeme: " << l << ", line " << yylineno << std::endl;
+
+	}
+    }
+    */
+   
     void yyerror(char *s) {
-        std::cerr << s << ", line " << yylineno << std::endl;
-        //exit(1);
-    }
+      std::cerr << s << ", line " << yylineno << std::endl;
+     }
+    void token_print(char *s,std::string l) {   
+      std::cerr << "token type: "<< s << ", lexeme: " << l << ", line " << yylineno << std::endl;
+     }
 
-    #define TOKENPASTE(x, y) x ## y
-#define TOKENPASTE2(x, y) TOKENPASTE(x, y)
-#define foreach(i, list) typedef typeof(list) TOKENPASTE2(T,__LINE__); \
-                    for(TOKENPASTE2(T,__LINE__)::iterator i = list.begin(); i != list.end(); i++)
+    #define YYSTYPE std::string
 
-    class oper_t { // abstract
-        protected: oper_t() {}
-        public: virtual ~oper_t() {}
-        virtual void print(int indent=0) =0;
-    };
-
-    class expr_t { // abstract
-        protected: expr_t() {}
-        public: virtual ~expr_t() {}
-        virtual void print() =0;
-    };
-
-    class block : public oper_t {
-        std::list<oper_t*> ops;
-        void append(oper_t* op) {
-            block* b = dynamic_cast<block*>(op);
-            if(b) {
-                ops.splice(ops.end(), b->ops, b->ops.begin(), b->ops.end());
-                delete b;
-            }
-            else ops.push_back(op);
-        }
-        public:
-            block() {}
-            block(oper_t* op) { append(op); }
-            block(oper_t* op1, oper_t* op2) { append(op1); append(op2); }
-        int size() { return ops.size(); }
-        virtual void print(int indent=0) {
-            foreach(i, ops) {
-                std::cout << std::string(indent, '\t');
-                (*i)->print(indent);
-            }
-        }
-        virtual ~block() { foreach(i, ops) delete *i; }
-    };
-
-    class exprop : public oper_t {
-        expr_t* expr;
-        public: exprop(expr_t* expr) : expr(expr) {}
-        virtual void print(int indent=0) {
-            expr->print();
-            std::cout << ";" << std::endl;
-        }
-        virtual ~exprop() { delete expr; }
-    };
-
-    class ifop : public oper_t {
-        expr_t* cond;
-        block thenops, elseops;
-        public: ifop(expr_t* cond, oper_t* thenops, oper_t* elseops) :
-                cond(cond), thenops(thenops), elseops(elseops) {}
-        virtual void print(int indent=0) {
-            std::cout << "if "; cond->print();  std::cout << " {" << std::endl;
-            thenops.print(indent+1);
-            if (elseops.size()) {
-                std::cout << std::string(indent, '\t') << "} else {" << std::endl;
-                elseops.print(indent+1);
-            }
-            std::cout << std::string(indent, '\t') << "}" << std::endl;
-        }
-        virtual ~ifop() { delete cond; }
-    };
-
-    class whileop : public oper_t {
-        expr_t* cond;
-        block ops;
-        public: whileop(expr_t* cond, oper_t* ops) : cond(cond), ops(ops) {}
-        virtual void print(int indent=0) {
-            std::cout << "while "; cond->print();  std::cout << " {" << std::endl;
-            ops.print(indent+1);
-            std::cout << std::string(indent, '\t') << "}" << std::endl;
-        }
-        virtual ~whileop() { delete cond; }
-    };
-
-    class exitop : public oper_t {
-        virtual void print(int indent=0) { std::cout << "exit;" << std::endl; }
-    };
-
-    class binary : public expr_t {
-        const char* op;
-        expr_t *arg1, *arg2;
-        public: binary(const char* op, expr_t *arg1, expr_t *arg2) :
-                op(op), arg1(arg1), arg2(arg2) {}
-        virtual void print() {
-            std::cout<<"(";
-            arg1->print();
-            std::cout<<op;
-            arg2->print();
-            std::cout<<")";
-        }
-        virtual ~binary() { delete arg1; delete arg2; }
-    };
-
-    class assign : public expr_t {
-        std::string name;
-        expr_t* value;
-        public: assign(const std::string& name, expr_t* value) :
-                name(name), value(value) {}
-        virtual void print() { std::cout<<name<<" = "; value->print(); }
-        virtual ~assign() { delete value; }
-    };
-
-    class unary : public expr_t {
-        const char* op;
-        expr_t* arg;
-        public: unary(const char* op, expr_t* arg) : op(op), arg(arg) {}
-        virtual void print() { std::cout<<op; arg->print(); }
-        virtual ~unary() { delete arg; }
-    };
-
-    class funcall : public expr_t {
-        std::string name;
-        std::list<expr_t*> args;
-        public: funcall(const std::string& name,
-                const std::list<expr_t*>& args) :
-                name(name), args(args) {}
-        virtual void print() {
-            std::cout<<name<<"(";
-            foreach(i,args) {
-                if (i!=args.begin())
-                    std::cout<<", ";
-                (*i)->print();
-            }
-            std::cout<<")";
-        }
-        virtual ~funcall() { foreach(i,args) delete *i; }
-    };
-
-    class value : public expr_t {
-        std::string text;
-        public: value(const std::string& text) : text(text) {}
-        virtual void print() { std::cout<<text; }
-    };
-
-// возможные значения символа: строка, оператор, выражение, список аргументов
-    typedef struct {
-        std::string str;
-        oper_t* oper;
-        expr_t* expr;
-        std::list<expr_t*> args;
-    } YYSTYPE;
-    #define YYSTYPE YYSTYPE
-
-// глобальная замена
-    std::string replaceAll(const std::string& where, const std::string& what, const std::string& withWhat) {
-        std::string result = where;
-        while(1) {
-            int pos = result.find(what);
-            if (pos==-1) return result;
-            result.replace(pos, what.size(), withWhat);
-        }
-    }
 
 #line 88 "/usr/share/bison++/bison.cc"
 /* %{ and %header{ and %union, during decl */
@@ -468,17 +337,28 @@ typedef
 /* TOKEN C */
 
  #line 263 "/usr/share/bison++/bison.cc"
-#define	IF	258
-#define	ELSE	259
-#define	WHILE	260
-#define	EXIT	261
-#define	EQ	262
-#define	LE	263
-#define	GE	264
-#define	NE	265
-#define	STRING	266
-#define	NUM	267
-#define	ID	268
+#define	START_PROG	258
+#define	END_PROG	259
+#define	START_COM	260
+#define	INT	261
+#define	REAL	262
+#define	CONST	263
+#define	ID_1	264
+#define	ASSIGN	265
+#define	NUM_1	266
+#define	STRING	267
+#define	EXCEPTION	268
+#define	ar_op_1	269
+#define	rel_op_1	270
+#define	IF	271
+#define	THEN	272
+#define	ELSE	273
+#define	WHILE	274
+#define	END_LOOP	275
+#define	LOOP	276
+#define	EMBED	277
+#define	END_EMBED	278
+#define	RAISE	279
 
 
 #line 263 "/usr/share/bison++/bison.cc"
@@ -528,17 +408,28 @@ public:
 /* static const int token ... */
 
  #line 307 "/usr/share/bison++/bison.cc"
+static const int START_PROG;
+static const int END_PROG;
+static const int START_COM;
+static const int INT;
+static const int REAL;
+static const int CONST;
+static const int ID_1;
+static const int ASSIGN;
+static const int NUM_1;
+static const int STRING;
+static const int EXCEPTION;
+static const int ar_op_1;
+static const int rel_op_1;
 static const int IF;
+static const int THEN;
 static const int ELSE;
 static const int WHILE;
-static const int EXIT;
-static const int EQ;
-static const int LE;
-static const int GE;
-static const int NE;
-static const int STRING;
-static const int NUM;
-static const int ID;
+static const int END_LOOP;
+static const int LOOP;
+static const int EMBED;
+static const int END_EMBED;
+static const int RAISE;
 
 
 #line 307 "/usr/share/bison++/bison.cc"
@@ -547,17 +438,28 @@ static const int ID;
 enum YY_parse_ENUM_TOKEN { YY_parse_NULL_TOKEN=0
 
  #line 310 "/usr/share/bison++/bison.cc"
-	,IF=258
-	,ELSE=259
-	,WHILE=260
-	,EXIT=261
-	,EQ=262
-	,LE=263
-	,GE=264
-	,NE=265
-	,STRING=266
-	,NUM=267
-	,ID=268
+	,START_PROG=258
+	,END_PROG=259
+	,START_COM=260
+	,INT=261
+	,REAL=262
+	,CONST=263
+	,ID_1=264
+	,ASSIGN=265
+	,NUM_1=266
+	,STRING=267
+	,EXCEPTION=268
+	,ar_op_1=269
+	,rel_op_1=270
+	,IF=271
+	,THEN=272
+	,ELSE=273
+	,WHILE=274
+	,END_LOOP=275
+	,LOOP=276
+	,EMBED=277
+	,END_EMBED=278
+	,RAISE=279
 
 
 #line 310 "/usr/share/bison++/bison.cc"
@@ -594,17 +496,28 @@ public:
 #if YY_parse_USE_CONST_TOKEN != 0
 
  #line 341 "/usr/share/bison++/bison.cc"
-const int YY_parse_CLASS::IF=258;
-const int YY_parse_CLASS::ELSE=259;
-const int YY_parse_CLASS::WHILE=260;
-const int YY_parse_CLASS::EXIT=261;
-const int YY_parse_CLASS::EQ=262;
-const int YY_parse_CLASS::LE=263;
-const int YY_parse_CLASS::GE=264;
-const int YY_parse_CLASS::NE=265;
-const int YY_parse_CLASS::STRING=266;
-const int YY_parse_CLASS::NUM=267;
-const int YY_parse_CLASS::ID=268;
+const int YY_parse_CLASS::START_PROG=258;
+const int YY_parse_CLASS::END_PROG=259;
+const int YY_parse_CLASS::START_COM=260;
+const int YY_parse_CLASS::INT=261;
+const int YY_parse_CLASS::REAL=262;
+const int YY_parse_CLASS::CONST=263;
+const int YY_parse_CLASS::ID_1=264;
+const int YY_parse_CLASS::ASSIGN=265;
+const int YY_parse_CLASS::NUM_1=266;
+const int YY_parse_CLASS::STRING=267;
+const int YY_parse_CLASS::EXCEPTION=268;
+const int YY_parse_CLASS::ar_op_1=269;
+const int YY_parse_CLASS::rel_op_1=270;
+const int YY_parse_CLASS::IF=271;
+const int YY_parse_CLASS::THEN=272;
+const int YY_parse_CLASS::ELSE=273;
+const int YY_parse_CLASS::WHILE=274;
+const int YY_parse_CLASS::END_LOOP=275;
+const int YY_parse_CLASS::LOOP=276;
+const int YY_parse_CLASS::EMBED=277;
+const int YY_parse_CLASS::END_EMBED=278;
+const int YY_parse_CLASS::RAISE=279;
 
 
 #line 341 "/usr/share/bison++/bison.cc"
@@ -623,26 +536,26 @@ YY_parse_CONSTRUCTOR_CODE;
  #line 352 "/usr/share/bison++/bison.cc"
 
 
-#define	YYFINAL		74
+#define	YYFINAL		65
 #define	YYFLAG		-32768
-#define	YYNTBASE	28
+#define	YYNTBASE	30
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 268 ? yytranslate[x] : 40)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 279 ? yytranslate[x] : 44)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,    26,     2,     2,     2,     2,     2,     2,    17,
-    18,    24,    22,    27,    23,     2,    25,     2,     2,     2,
-     2,     2,     2,     2,     2,     2,     2,     2,    16,    21,
-    19,    20,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,    28,
+    29,     2,     2,    27,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,    26,    25,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,    14,     2,    15,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -656,127 +569,112 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13
+     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
+    16,    17,    18,    19,    20,    21,    22,    23,    24
 };
 
 #if YY_parse_DEBUG != 0
 static const short yyprhs[] = {     0,
-     0,     2,     4,     7,    11,    14,    22,    28,    31,    37,
-    45,    51,    53,    55,    57,    61,    63,    67,    71,    75,
-    79,    83,    87,    89,    93,    97,    99,   103,   107,   109,
-   112,   115,   119,   121,   126,   127,   129,   133,   135
+     0,     6,     7,    10,    14,    17,    23,    27,    29,    33,
+    35,    37,    39,    43,    47,    55,    61,    67,    70,    74,
+    76,    78,    82,    86,    88,    90,    92,    94
 };
 
-static const short yyrhs[] = {    29,
-     0,    32,     0,    29,    32,     0,    14,    29,    15,     0,
-    33,    16,     0,     3,    17,    33,    18,    30,     4,    30,
-     0,     5,    17,    33,    18,    30,     0,     6,    16,     0,
-     3,    17,    33,    18,    32,     0,     3,    17,    33,    18,
-    30,     4,    31,     0,     5,    17,    33,    18,    31,     0,
-    30,     0,    31,     0,    34,     0,    13,    19,    33,     0,
-    35,     0,    34,     7,    35,     0,    34,     8,    35,     0,
-    34,     9,    35,     0,    34,    10,    35,     0,    34,    20,
-    35,     0,    34,    21,    35,     0,    36,     0,    35,    22,
-    36,     0,    35,    23,    36,     0,    37,     0,    36,    24,
-    37,     0,    36,    25,    37,     0,    12,     0,    23,    37,
-     0,    26,    37,     0,    17,    33,    18,     0,    13,     0,
-    13,    17,    38,    18,     0,     0,    39,     0,    38,    27,
-    39,     0,    33,     0,    11,     0
+static const short yyrhs[] = {     3,
+    31,     5,    35,     4,     0,     0,    32,    25,     0,    32,
+    25,    31,     0,    34,    33,     0,    34,     8,    39,    41,
+    40,     0,    39,    26,    13,     0,    39,     0,    39,    27,
+    33,     0,     6,     0,     7,     0,    36,     0,    36,    25,
+    35,     0,    39,    41,    37,     0,    16,    38,    17,    35,
+    18,    35,    20,     0,    21,    35,    19,    38,    20,     0,
+    22,    31,     5,    35,    23,     0,    24,    39,     0,    37,
+    42,    37,     0,    39,     0,    40,     0,    28,    37,    29,
+     0,    37,    43,    37,     0,     9,     0,    11,     0,    10,
+     0,    14,     0,    15,     0
 };
 
 #endif
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-   182,   185,   186,   189,   190,   191,   192,   193,   196,   197,
-   198,   201,   201,   203,   204,   206,   207,   208,   209,   210,
-   211,   212,   215,   216,   217,   220,   221,   222,   225,   226,
-   227,   228,   229,   230,   233,   234,   235,   238,   239
+    45,    48,    49,    51,    54,    56,    58,    62,    64,    67,
+    69,    73,    75,    80,    82,    84,    86,    88,    92,    94,
+    96,    98,   102,   105,   111,   116,   122,   128
 };
 
-static const char * const yytname[] = {   "$","error","$illegal.","IF","ELSE",
-"WHILE","EXIT","EQ","LE","GE","NE","STRING","NUM","ID","'{'","'}'","';'","'('",
-"')'","'='","'>'","'<'","'+'","'-'","'*'","'/'","'!'","','","PROGRAM","OPS",
-"OP1","OP2","OP","EXPR","EXPR1","EXPR2","TERM","VAL","ARGS","ARG",""
+static const char * const yytname[] = {   "$","error","$illegal.","START_PROG",
+"END_PROG","START_COM","INT","REAL","CONST","ID_1","ASSIGN","NUM_1","STRING",
+"EXCEPTION","ar_op_1","rel_op_1","IF","THEN","ELSE","WHILE","END_LOOP","LOOP",
+"EMBED","END_EMBED","RAISE","';'","':'","','","'('","')'","PROGRAM","DEFINITIONS",
+"DEFINITION","ID_LIST","TYPE","COMMANDS","COMMAND","EXPRESSION","CONDITION",
+"ID","NUM","assignment","ar_op","rel_op",""
 };
 #endif
 
 static const short yyr1[] = {     0,
-    28,    29,    29,    30,    30,    30,    30,    30,    31,    31,
-    31,    32,    32,    33,    33,    34,    34,    34,    34,    34,
-    34,    34,    35,    35,    35,    36,    36,    36,    37,    37,
-    37,    37,    37,    37,    38,    38,    38,    39,    39
+    30,    31,    31,    31,    32,    32,    32,    33,    33,    34,
+    34,    35,    35,    36,    36,    36,    36,    36,    37,    37,
+    37,    37,    38,    39,    40,    41,    42,    43
 };
 
 static const short yyr2[] = {     0,
-     1,     1,     2,     3,     2,     7,     5,     2,     5,     7,
-     5,     1,     1,     1,     3,     1,     3,     3,     3,     3,
-     3,     3,     1,     3,     3,     1,     3,     3,     1,     2,
-     2,     3,     1,     4,     0,     1,     3,     1,     1
+     5,     0,     2,     3,     2,     5,     3,     1,     3,     1,
+     1,     1,     3,     3,     7,     5,     5,     2,     3,     1,
+     1,     3,     3,     1,     1,     1,     1,     1
 };
 
 static const short yydefact[] = {     0,
-     0,     0,     0,    29,    33,     0,     0,     0,     0,     1,
-    12,    13,     2,     0,    14,    16,    23,    26,     0,     0,
-     8,    35,     0,     0,     0,    33,    30,    31,     3,     5,
-     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     0,     0,    39,    38,     0,    36,    15,     4,    32,    17,
-    18,    19,    20,    21,    22,    24,    25,    27,    28,     0,
-     0,    34,     0,    12,     9,     7,    11,    37,     0,     6,
-    10,     0,     0,     0
+     2,    10,    11,    24,     0,     0,     0,     0,     0,     2,
+     0,     5,     8,     0,     0,     0,     2,     0,     0,    12,
+     0,     4,     0,     0,     7,    25,     0,     0,     0,    20,
+    21,     0,     0,    18,     1,     0,    26,     0,     0,     9,
+     0,    27,    28,     0,     0,     0,     0,     0,    13,    14,
+     6,    22,    19,    23,     0,     0,     0,     0,    16,    17,
+     0,    15,     0,     0,     0
 };
 
-static const short yydefgoto[] = {    72,
-    10,    11,    12,    13,    14,    15,    16,    17,    18,    45,
-    46
+static const short yydefgoto[] = {    63,
+     5,     6,    12,     7,    19,    20,    28,    29,    21,    31,
+    38,    44,    45
 };
 
-static const short yypact[] = {    35,
-    -8,     3,    -9,-32768,     6,    35,    63,    75,    75,    35,
--32768,-32768,-32768,    -2,    62,     4,    10,-32768,    63,    63,
--32768,    51,    63,    16,    14,    26,-32768,-32768,-32768,-32768,
-    75,    75,    75,    75,    75,    75,    75,    75,    75,    75,
-    28,    32,-32768,-32768,   -10,-32768,-32768,-32768,-32768,     4,
-     4,     4,     4,     4,     4,    10,    10,-32768,-32768,    35,
-    35,-32768,    51,    20,-32768,-32768,-32768,-32768,    35,-32768,
--32768,    53,    55,-32768
+static const short yypact[] = {     0,
+    42,-32768,-32768,-32768,     2,   -20,    16,   -15,    11,    42,
+     4,-32768,     7,    18,    -7,    11,    42,     4,    32,    14,
+    35,-32768,    35,     4,-32768,-32768,    -7,    27,    30,-32768,
+-32768,    33,    48,-32768,-32768,    11,-32768,    -7,    43,-32768,
+     1,-32768,-32768,    -7,    -7,    11,    -7,    11,-32768,    41,
+-32768,-32768,    41,    41,    38,    37,    36,    11,-32768,-32768,
+    40,-32768,    58,    61,-32768
 };
 
 static const short yypgoto[] = {-32768,
-    45,   -59,   -58,    -6,    -7,-32768,    71,     7,    -3,-32768,
-    -4
+    12,-32768,    39,-32768,    -8,-32768,   -26,    15,    -1,    25,
+    44,-32768,-32768
 };
 
 
-#define	YYLAST		107
+#define	YYLAST		67
 
 
-static const short yytable[] = {    25,
-    64,    66,    67,    29,    27,    28,    21,    62,    19,    70,
-    71,    41,    42,    30,    44,    47,    63,    29,     1,    20,
-     2,     3,    22,    69,    23,    37,    38,     4,     5,     6,
-    48,    49,     7,    39,    40,    58,    59,     1,     8,     2,
-     3,     9,    22,    56,    57,    60,     4,     5,     6,    61,
-    24,     7,    73,    65,    74,    44,     0,     8,    68,     0,
-     9,    43,     4,     5,     0,     0,     0,     7,    31,    32,
-    33,    34,     0,     8,     4,     5,     9,     0,     0,     7,
-     0,    35,    36,     0,     0,     8,     4,    26,     9,     0,
-     0,     7,     0,     0,     0,     0,     0,     8,     0,     0,
-     9,    50,    51,    52,    53,    54,    55
+static const short yytable[] = {     8,
+    41,     4,     1,    26,    10,    13,     9,    32,     8,    23,
+    14,    50,     4,    30,    42,     8,    34,    53,    54,     4,
+    27,    22,    13,    11,     4,    30,    15,    49,    33,    52,
+    25,    16,    17,    24,    18,    35,    30,    55,    36,    57,
+    42,    43,    30,    30,    37,    30,    46,     2,     3,    61,
+     4,    47,    48,    26,    42,    58,    59,    64,    60,    62,
+    65,    56,    40,    51,     0,     0,    39
 };
 
-static const short yycheck[] = {     7,
-    60,    61,    61,    10,     8,     9,    16,    18,    17,    69,
-    69,    19,    20,    16,    22,    23,    27,    24,     3,    17,
-     5,     6,    17,     4,    19,    22,    23,    12,    13,    14,
-    15,    18,    17,    24,    25,    39,    40,     3,    23,     5,
-     6,    26,    17,    37,    38,    18,    12,    13,    14,    18,
-     6,    17,     0,    60,     0,    63,    -1,    23,    63,    -1,
-    26,    11,    12,    13,    -1,    -1,    -1,    17,     7,     8,
-     9,    10,    -1,    23,    12,    13,    26,    -1,    -1,    17,
-    -1,    20,    21,    -1,    -1,    23,    12,    13,    26,    -1,
-    -1,    17,    -1,    -1,    -1,    -1,    -1,    23,    -1,    -1,
-    26,    31,    32,    33,    34,    35,    36
+static const short yycheck[] = {     1,
+    27,     9,     3,    11,    25,     7,     5,    16,    10,    11,
+    26,    38,     9,    15,    14,    17,    18,    44,    45,     9,
+    28,    10,    24,     8,     9,    27,    16,    36,    17,    29,
+    13,    21,    22,    27,    24,     4,    38,    46,    25,    48,
+    14,    15,    44,    45,    10,    47,    17,     6,     7,    58,
+     9,    19,     5,    11,    14,    18,    20,     0,    23,    20,
+     0,    47,    24,    39,    -1,    -1,    23
 };
 
 #line 352 "/usr/share/bison++/bison.cc"
@@ -1272,129 +1170,35 @@ YYLABEL(yyreduce)
 
   switch (yyn) {
 
-case 1:
-#line 182 "exprs.yacc"
-{ yyvsp[0].oper->print(); delete yyvsp[0].oper; ;
-    break;}
-case 3:
-#line 186 "exprs.yacc"
-{ yyval.oper = new block(yyvsp[-1].oper, yyvsp[0].oper); ;
-    break;}
-case 4:
-#line 189 "exprs.yacc"
-{ yyval.oper = yyvsp[-1].oper; ;
-    break;}
-case 5:
-#line 190 "exprs.yacc"
-{ yyval.oper = new exprop(yyvsp[-1].expr); ;
-    break;}
-case 6:
-#line 191 "exprs.yacc"
-{ yyval.oper = new ifop(yyvsp[-4].expr, yyvsp[-2].oper, yyvsp[0].oper); ;
-    break;}
-case 7:
-#line 192 "exprs.yacc"
-{ yyval.oper = new whileop(yyvsp[-2].expr, yyvsp[0].oper); ;
-    break;}
-case 8:
-#line 193 "exprs.yacc"
-{ yyval.oper = new exitop(); ;
-    break;}
-case 9:
-#line 196 "exprs.yacc"
-{ yyval.oper = new ifop(yyvsp[-2].expr, yyvsp[0].oper, new block()); ;
-    break;}
-case 10:
-#line 197 "exprs.yacc"
-{ yyval.oper = new ifop(yyvsp[-4].expr, yyvsp[-2].oper, yyvsp[0].oper); ;
-    break;}
-case 11:
-#line 198 "exprs.yacc"
-{ yyval.oper = new whileop(yyvsp[-2].expr, yyvsp[0].oper); ;
-    break;}
-case 15:
-#line 204 "exprs.yacc"
-{ yyval.expr = new assign(yyvsp[-2].str, yyvsp[0].expr); ;
-    break;}
-case 17:
-#line 207 "exprs.yacc"
-{ yyval.expr = new binary("==", yyvsp[-2].expr, yyvsp[0].expr); ;
-    break;}
-case 18:
-#line 208 "exprs.yacc"
-{ yyval.expr = new binary("<=", yyvsp[-2].expr, yyvsp[0].expr); ;
-    break;}
-case 19:
-#line 209 "exprs.yacc"
-{ yyval.expr = new binary(">=", yyvsp[-2].expr, yyvsp[0].expr); ;
-    break;}
-case 20:
-#line 210 "exprs.yacc"
-{ yyval.expr = new binary("!=", yyvsp[-2].expr, yyvsp[0].expr); ;
-    break;}
-case 21:
-#line 211 "exprs.yacc"
-{ yyval.expr = new binary(">", yyvsp[-2].expr, yyvsp[0].expr); ;
-    break;}
-case 22:
-#line 212 "exprs.yacc"
-{ yyval.expr = new binary("<", yyvsp[-2].expr, yyvsp[0].expr); ;
-    break;}
 case 24:
-#line 216 "exprs.yacc"
-{ yyval.expr = new binary("+", yyvsp[-2].expr, yyvsp[0].expr); ;
+#line 107 "exprs.yacc"
+{
+	  token_print("id    ",yyval);
+	;
     break;}
 case 25:
-#line 217 "exprs.yacc"
-{ yyval.expr = new binary("-", yyvsp[-2].expr, yyvsp[0].expr); ;
+#line 113 "exprs.yacc"
+{
+	  token_print("number",yyval);
+	;
+    break;}
+case 26:
+#line 118 "exprs.yacc"
+{
+	   token_print("assign",yyval);
+	;
     break;}
 case 27:
-#line 221 "exprs.yacc"
-{ yyval.expr = new binary("*", yyvsp[-2].expr, yyvsp[0].expr); ;
+#line 124 "exprs.yacc"
+{
+	   token_print("ar_op ",yyval);
+	;
     break;}
 case 28:
-#line 222 "exprs.yacc"
-{ yyval.expr = new binary("/", yyvsp[-2].expr, yyvsp[0].expr); ;
-    break;}
-case 29:
-#line 225 "exprs.yacc"
-{ yyval.expr = new value(yyvsp[0].str); ;
-    break;}
-case 30:
-#line 226 "exprs.yacc"
-{ yyval.expr = new unary("-", yyvsp[0].expr); ;
-    break;}
-case 31:
-#line 227 "exprs.yacc"
-{ yyval.expr = new unary("!", yyvsp[0].expr); ;
-    break;}
-case 32:
-#line 228 "exprs.yacc"
-{ yyval.expr = yyvsp[-1].expr; ;
-    break;}
-case 33:
-#line 229 "exprs.yacc"
-{ yyval.expr = new value(yyvsp[0].str); ;
-    break;}
-case 34:
-#line 230 "exprs.yacc"
-{ yyval.expr=new funcall(yyvsp[-3].str, yyvsp[-1].args); ;
-    break;}
-case 35:
-#line 233 "exprs.yacc"
-{ yyval.args.clear(); ;
-    break;}
-case 36:
-#line 234 "exprs.yacc"
-{ yyval.args.clear(); yyval.args.push_back(yyvsp[0].expr); ;
-    break;}
-case 37:
-#line 235 "exprs.yacc"
-{ yyval.args = yyvsp[-2].args; yyval.args.push_back(yyvsp[0].expr); ;
-    break;}
-case 39:
-#line 239 "exprs.yacc"
-{ yyval.expr=new value('"'+replaceAll(yyvsp[0].str, "\n", "\\n")+'"'); ;
+#line 130 "exprs.yacc"
+{
+	   token_print("rel_op",yyval);
+	;
     break;}
 }
 
@@ -1600,6 +1404,8 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 242 "exprs.yacc"
+#line 134 "exprs.yacc"
 
-int main() { return yyparse(); }	
+
+int main() { return yyparse();}
+

@@ -186,17 +186,28 @@ typedef
 
 
  #line 169 "/usr/share/bison++/bison.h"
-#define	IF	258
-#define	ELSE	259
-#define	WHILE	260
-#define	EXIT	261
-#define	EQ	262
-#define	LE	263
-#define	GE	264
-#define	NE	265
-#define	STRING	266
-#define	NUM	267
-#define	ID	268
+#define	START_PROG	258
+#define	END_PROG	259
+#define	START_COM	260
+#define	INT	261
+#define	REAL	262
+#define	CONST	263
+#define	ID_1	264
+#define	ASSIGN	265
+#define	NUM_1	266
+#define	STRING	267
+#define	EXCEPTION	268
+#define	ar_op_1	269
+#define	rel_op_1	270
+#define	IF	271
+#define	THEN	272
+#define	ELSE	273
+#define	WHILE	274
+#define	END_LOOP	275
+#define	LOOP	276
+#define	EMBED	277
+#define	END_EMBED	278
+#define	RAISE	279
 
 
 #line 169 "/usr/share/bison++/bison.h"
@@ -245,17 +256,28 @@ public:
   /* static const int token ... */
   
  #line 212 "/usr/share/bison++/bison.h"
+static const int START_PROG;
+static const int END_PROG;
+static const int START_COM;
+static const int INT;
+static const int REAL;
+static const int CONST;
+static const int ID_1;
+static const int ASSIGN;
+static const int NUM_1;
+static const int STRING;
+static const int EXCEPTION;
+static const int ar_op_1;
+static const int rel_op_1;
 static const int IF;
+static const int THEN;
 static const int ELSE;
 static const int WHILE;
-static const int EXIT;
-static const int EQ;
-static const int LE;
-static const int GE;
-static const int NE;
-static const int STRING;
-static const int NUM;
-static const int ID;
+static const int END_LOOP;
+static const int LOOP;
+static const int EMBED;
+static const int END_EMBED;
+static const int RAISE;
 
 
 #line 212 "/usr/share/bison++/bison.h"
@@ -264,17 +286,28 @@ static const int ID;
   enum YY_parse_ENUM_TOKEN { YY_parse_NULL_TOKEN=0
   
  #line 215 "/usr/share/bison++/bison.h"
-	,IF=258
-	,ELSE=259
-	,WHILE=260
-	,EXIT=261
-	,EQ=262
-	,LE=263
-	,GE=264
-	,NE=265
-	,STRING=266
-	,NUM=267
-	,ID=268
+	,START_PROG=258
+	,END_PROG=259
+	,START_COM=260
+	,INT=261
+	,REAL=262
+	,CONST=263
+	,ID_1=264
+	,ASSIGN=265
+	,NUM_1=266
+	,STRING=267
+	,EXCEPTION=268
+	,ar_op_1=269
+	,rel_op_1=270
+	,IF=271
+	,THEN=272
+	,ELSE=273
+	,WHILE=274
+	,END_LOOP=275
+	,LOOP=276
+	,EMBED=277
+	,END_EMBED=278
+	,RAISE=279
 
 
 #line 215 "/usr/share/bison++/bison.h"
