@@ -59,7 +59,7 @@ exit            return EXIT;
                   return NUM_1;
                 }
 
-[a-zA-Z]+([a-zA-Z0-9_]*[a-zA-Z0-9]+)* { yylval = yytext;
+[a-zA-Z]+([_].[a-zA-Z0-9]+)*[a-zA-Z0-9]* { yylval = yytext;
                   return ID_1;
                 }
 ["]             { yylval = ""; BEGIN(STR); }
@@ -72,6 +72,6 @@ exit            return EXIT;
 [ \t\r\n]       ; // whitespace
 
 [{};:()<>!,] { return *yytext; }
-.               yyerror("Invalid character");
+.|__            {  printf("BadChar: %s ", yytext); yyerror("Invalid character"); }
 
 %%
