@@ -2,7 +2,7 @@ start_prog
 
 // DEFINITIONS 
 integer const a:=5;
-real const b__v:=6.1 b__v:=6.1;
+real const b_v:=6.1 b_v:=6.1;
 real vasya,petya;
 bbb:exception;
 
