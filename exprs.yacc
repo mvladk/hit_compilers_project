@@ -5,6 +5,8 @@
     #include <sstream>
     extern int yylineno;
     extern int yylex();
+    extern FILE * yyin;
+    extern FILE * yyout;
     const int MAXAR = 1000;
     struct one_token {
       char * token_type;
@@ -133,5 +135,11 @@ rel_op:
 	;
 %%
 
-int main() { return yyparse();}
+int main(int argc, char *argv[]) {
+    yyin=fopen(argv[1],"r");
+    if(argv[2])  yyout=fopen(argv[2],"w");
+    else yyout=stdout;
+
+  return yyparse();
+}
 

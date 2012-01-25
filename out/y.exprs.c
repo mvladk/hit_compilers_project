@@ -106,6 +106,8 @@ Maintained by Magnus Ekdahl <magnus@debian.org>
     #include <sstream>
     extern int yylineno;
     extern int yylex();
+    extern FILE * yyin;
+    extern FILE * yyout;
     const int MAXAR = 1000;
     struct one_token {
       char * token_type;
@@ -597,9 +599,9 @@ static const short yyrhs[] = {     3,
 
 #if (YY_parse_DEBUG != 0) || defined(YY_parse_ERROR_VERBOSE) 
 static const short yyrline[] = { 0,
-    45,    48,    49,    51,    54,    56,    58,    62,    64,    67,
-    69,    73,    75,    80,    82,    84,    86,    88,    92,    94,
-    96,    98,   102,   105,   111,   116,   122,   128
+    47,    50,    51,    53,    56,    58,    60,    64,    66,    69,
+    71,    75,    77,    82,    84,    86,    88,    90,    94,    96,
+    98,   100,   104,   107,   113,   118,   124,   130
 };
 
 static const char * const yytname[] = {   "$","error","$illegal.","START_PROG",
@@ -1171,31 +1173,31 @@ YYLABEL(yyreduce)
   switch (yyn) {
 
 case 24:
-#line 107 "exprs.yacc"
+#line 109 "exprs.yacc"
 {
 	  token_print("id    ",yyval);
 	;
     break;}
 case 25:
-#line 113 "exprs.yacc"
+#line 115 "exprs.yacc"
 {
 	  token_print("number",yyval);
 	;
     break;}
 case 26:
-#line 118 "exprs.yacc"
+#line 120 "exprs.yacc"
 {
 	   token_print("assign",yyval);
 	;
     break;}
 case 27:
-#line 124 "exprs.yacc"
+#line 126 "exprs.yacc"
 {
 	   token_print("ar_op ",yyval);
 	;
     break;}
 case 28:
-#line 130 "exprs.yacc"
+#line 132 "exprs.yacc"
 {
 	   token_print("rel_op",yyval);
 	;
@@ -1404,8 +1406,14 @@ YYLABEL(yyerrhandle)
 /* END */
 
  #line 1038 "/usr/share/bison++/bison.cc"
-#line 134 "exprs.yacc"
+#line 136 "exprs.yacc"
 
 
-int main() { return yyparse();}
+int main(int argc, char *argv[]) {
+    yyin=fopen(argv[1],"r");
+    if(argv[2])  yyout=fopen(argv[2],"w");
+    else yyout=stdout;
+
+  return yyparse();
+}
 

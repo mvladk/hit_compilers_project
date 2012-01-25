@@ -4,10 +4,14 @@
    #define YYSTYPE std::string
    #include "y.exprs.h"
    void yyerror(char *s);
+  FILE * fp=fopen("../input.txt","r");
+  yyin=fp;
+
 %}
 
 %option yylineno
 %option noyywrap
+%option never-interactive
 
 %x STR
 DIGIT [0-9]
@@ -59,7 +63,7 @@ exit            return EXIT;
                   return NUM_1;
                 }
 
-[a-zA-Z]+([_][a-zA-Z0-9]+)*[a-zA-Z0-9]* { yylval = yytext;
+[a-zA-Z]+([_].[a-zA-Z0-9]+)*[a-zA-Z0-9]* { yylval = yytext;
                   return ID_1;
                 }
 ["]             { yylval = ""; BEGIN(STR); }

@@ -8,6 +8,7 @@
 
 %option yylineno
 %option noyywrap
+%option never-interactive
 
 %x STR
 DIGIT [0-9]
