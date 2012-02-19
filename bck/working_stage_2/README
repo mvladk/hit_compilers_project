@@ -1,0 +1,12 @@
+Hello World ;)
+Hello from Michael
+save to git:
+git commit -a
+git push
+
+get new version:
+git fetch
+git merge 
+Now works also on windows
+
+

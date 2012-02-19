@@ -1,0 +1,52 @@
+start_prog
+// poka nelza sdelat 0.1 zifri
+
+// DEFINITIONS 
+integer const a:=5;
+real const b__v:=6.1;
+real vasya,petya;
+bbb:exception;
+
+start_com
+// ar_op 
+a := c + 5; 
+a := b - c; 
+a := a - a1;
+a := a**xc;
+a := g*10;
+a := a+b-c+(w/10)**(5*cat);
+
+raise vasya;
+
+//rel_op 
+if a == b then a := a + b else a := a - b end_loop;
+if a <= b then a := a + b else a := a - b end_loop;
+if a <  b then a := a + b else a := a - b end_loop;
+if a >  b then a := a + b else a := a - b end_loop;
+if a >= b then a := a + b else a := a - b end_loop;
+if a != b then a := a + b else a := a - b end_loop;
+
+if 
+  a == b 
+then 
+  a:=1;
+  b:=2 
+else 
+  if 
+    a >= b 
+  then 
+    a := a + b 
+  else
+    a := a - b 
+  end_loop
+end_loop;
+
+loop a:=a+1 while a<10 end_loop;
+
+embed real 
+  const b:=6;
+start_com
+  b:=7 
+end_embed
+
+end_prog
