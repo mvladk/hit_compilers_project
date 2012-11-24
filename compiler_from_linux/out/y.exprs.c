@@ -350,8 +350,8 @@ typedef
 #define	NUM_1	266
 #define	STRING	267
 #define	EXCEPTION	268
-#define	ar_op_1	269
-#define	rel_op_1	270
+#define	AR_OP_1	269
+#define	REL_OP_1	270
 #define	IF	271
 #define	THEN	272
 #define	ELSE	273
@@ -421,8 +421,8 @@ static const int ASSIGN;
 static const int NUM_1;
 static const int STRING;
 static const int EXCEPTION;
-static const int ar_op_1;
-static const int rel_op_1;
+static const int AR_OP_1;
+static const int REL_OP_1;
 static const int IF;
 static const int THEN;
 static const int ELSE;
@@ -451,8 +451,8 @@ enum YY_parse_ENUM_TOKEN { YY_parse_NULL_TOKEN=0
 	,NUM_1=266
 	,STRING=267
 	,EXCEPTION=268
-	,ar_op_1=269
-	,rel_op_1=270
+	,AR_OP_1=269
+	,REL_OP_1=270
 	,IF=271
 	,THEN=272
 	,ELSE=273
@@ -509,8 +509,8 @@ const int YY_parse_CLASS::ASSIGN=265;
 const int YY_parse_CLASS::NUM_1=266;
 const int YY_parse_CLASS::STRING=267;
 const int YY_parse_CLASS::EXCEPTION=268;
-const int YY_parse_CLASS::ar_op_1=269;
-const int YY_parse_CLASS::rel_op_1=270;
+const int YY_parse_CLASS::AR_OP_1=269;
+const int YY_parse_CLASS::REL_OP_1=270;
 const int YY_parse_CLASS::IF=271;
 const int YY_parse_CLASS::THEN=272;
 const int YY_parse_CLASS::ELSE=273;
@@ -606,10 +606,10 @@ static const short yyrline[] = { 0,
 
 static const char * const yytname[] = {   "$","error","$illegal.","START_PROG",
 "END_PROG","START_COM","INT","REAL","CONST","ID_1","ASSIGN","NUM_1","STRING",
-"EXCEPTION","ar_op_1","rel_op_1","IF","THEN","ELSE","WHILE","END_LOOP","LOOP",
+"EXCEPTION","AR_OP_1","REL_OP_1","IF","THEN","ELSE","WHILE","END_LOOP","LOOP",
 "EMBED","END_EMBED","RAISE","';'","':'","','","'('","')'","PROGRAM","DEFINITIONS",
 "DEFINITION","ID_LIST","TYPE","COMMANDS","COMMAND","EXPRESSION","CONDITION",
-"ID","NUM","assignment","ar_op","rel_op",""
+"ID","NUM","ASSIGNment","AR_OP","REL_OP",""
 };
 #endif
 
@@ -728,7 +728,7 @@ YYBEGINDECLARELABEL
   YYDECLARELABEL(yydefault)
   YYDECLARELABEL(yyreduce)
   YYDECLARELABEL(yyerrlab)   /* here on detecting error */
-  YYDECLARELABEL(yyerrlab1)   /* here on error raised explicitly by an action */
+  YYDECLARELABEL(yyerrlab1)   /* here on error RAISEd explicitly by an action */
   YYDECLARELABEL(yyerrdefault)  /* current state does not do anything special for the error token. */
   YYDECLARELABEL(yyerrpop)   /* pop the current state because it cannot handle the error token */
   YYDECLARELABEL(yyerrhandle)  
@@ -926,7 +926,7 @@ YY_parse_PARSE_PARAM_DEF
 				/*  routines                            */
 
   int yylen;
-/* start loop, in which YYGOTO may be used. */
+/* start LOOP, in which YYGOTO may be used. */
 YYBEGINGOTO
 
 #if YY_parse_DEBUG != 0
@@ -1187,19 +1187,19 @@ case 25:
 case 26:
 #line 120 "exprs.yacc"
 {
-	   token_print("assign",yyval);
+	   token_print("ASSIGN",yyval);
 	;
     break;}
 case 27:
 #line 126 "exprs.yacc"
 {
-	   token_print("ar_op ",yyval);
+	   token_print("AR_OP ",yyval);
 	;
     break;}
 case 28:
 #line 132 "exprs.yacc"
 {
-	   token_print("rel_op",yyval);
+	   token_print("REL_OP",yyval);
 	;
     break;}
 }
@@ -1309,7 +1309,7 @@ YYLABEL(yyerrlab)   /* here on detecting error */
     }
 
   YYGOTO(yyerrlab1);
-YYLABEL(yyerrlab1)   /* here on error raised explicitly by an action */
+YYLABEL(yyerrlab1)   /* here on error RAISEd explicitly by an action */
 
   if (yyerrstatus == 3)
     {
@@ -1399,7 +1399,7 @@ YYLABEL(yyerrhandle)
 
   yystate = yyn;
   YYGOTO(yynewstate);
-/* end loop, in which YYGOTO may be used. */
+/* end LOOP, in which YYGOTO may be used. */
   YYENDGOTO
 }
 

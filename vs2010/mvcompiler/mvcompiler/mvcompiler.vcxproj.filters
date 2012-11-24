@@ -15,6 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\source files\flex.lex" />
+    <ClCompile Include="..\..\..\source files\parser.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source files\lex.yy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source files\token.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source files\util.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
