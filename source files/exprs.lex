@@ -2,6 +2,7 @@
    #include "token.h"
    void yyerror(char *s) {}
    int line_number = 1;
+   FILE *log_file;
 %}
 
 %option noyywrap
@@ -13,25 +14,29 @@ DIGIT [0-9]
 
 [/][/].*"\n"      line_number++; // comment
 "\n"              line_number++;
-START_PROG 	return START_PROG;
-END_PROG 	return END_PROG;
-START_COM 	return START_COM;
+start_prog 	return START_PROG;
+end_prog 	return END_PROG;
+start_com 	return START_COM;
 exception	return EXCEPTION;
 const		return CONST;
 :=		{return ASSIGN;}
 integer		return INT;
 real		return REAL;
-
-
+;           return SEMICOLON;
+,           return COMMA;
+:           return COLON;
+"("         return LEFT_BRACKET;
+")"         return RIGHT_BRACKET;
 if              return IF;
-THEN		return THEN;
+then		return THEN;
 else            return ELSE;
 while           return WHILE;
-END_LOOP	return END_LOOP;
-LOOP		return LOOP;
+end_loop	return END_LOOP;
+end_if      return END_IF;
+loop		return LOOP;
 embed		return EMBED;
-END_EMBED	return END_EMBED;
-RAISE		return RAISE;
+end_embed	return END_EMBED;
+raise		return RAISE;
  /*
 exit            return EXIT;
 */
@@ -43,7 +48,7 @@ exit            return EXIT;
 !=              { return REL_OP;}
 
 
-[-+/] 		{     return AR_OP;
+[\-+/] 		{     return AR_OP;
                 }
 [*]{1,2}	{     return AR_OP;
                 }
@@ -60,6 +65,13 @@ exit            return EXIT;
 [ \t\r\n]       ; // whitespace
 
 [{};:()<>!,] { return *yytext; }
-.|__            {  printf("BadChar: %s ", yytext); yyerror("Invalid character"); }
-
+.|__            {  printf("At Line %d - Bad Char %s\n", line_number, yytext);
+                   fprintf(log_file, "At Line %d - Bad Char %s\n", line_number, yytext);
+                   yyerror("Invalid character"); }
+<<EOF>>      return EOF;
 %%
+int main() {
+    log_file = fopen("log.txt", "w");
+    parse_PROGRAM();
+    fclose(log_file);
+}

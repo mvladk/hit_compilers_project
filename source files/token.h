@@ -4,7 +4,7 @@ typedef struct {
 	int line;
 } token;
 
-token *next_token();
+token next_token();
 void back_token();
 
 #define WHILE 200
