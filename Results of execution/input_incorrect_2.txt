@@ -1,0 +1,7 @@
+start_prog
+
+integer a,b,c
+
+start_com
+raise problem;
+end_prog
