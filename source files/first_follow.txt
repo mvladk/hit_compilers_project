@@ -1,0 +1,37 @@
+                   |first                     |  follow             |nullable
+-----------------------------------------------------------------------------
+PROGRAM            |start_prog                |$                    |X    
+DEFINITIONS        |id integer real           |start_com            |X
+DEFINITION_MAYBE   |;                         |; start_com          |V
+DEFINITION         |id integer real           |; start_com          |X
+DEFINITION_TYPE    |id const                  |; start_com          |X 
+TYPE               |integer real              |id const             |X
+ID_LIST            |id                        |; start_com          |X
+ID_LIST_MAYBE      |,                         |; start_com          |V
+----------------------------------------------------------------------
+COMMANDS           |id loop embed raise       |end_prog while       |X
+                   |                          |end_embed else end_if|
+----------------------------------------------------------------------
+COMMAND_MAYBE      |;                         |end_prog while       |V
+                   |                          |end_embed else end_if|
+----------------------------------------------------------------------
+COMMAND            |id loop embed raise       |end_prog while       |X
+                   |                          |end_embed ;          |
+                   |                          |else end_if          |
+----------------------------------------------------------------------
+EXPRESSION         |number id (               |end_prog while       |X
+                   |                          |end_embed ; )        |
+                   |                          |end_loop else end_if |
+                                              |then rel_op
+-----------------------------------------------------------------------
+EXPRESSION_SIMPLE  |number id (               |end_prog while       |X
+                   |                          |end_embed ; ) ar_op  |
+                   |                          |end_loop else end_if |
+                                              |then rel_op          |
+----------------------------------------------------------------------
+EXPRESSION_MAYBE   |ar_op                     |end_prog while       |V
+                   |                          |end_embed ; )        |
+                   |                          |end_loop else end_if |
+                   |                          |then rel_op          |
+----------------------------------------------------------------------
+CONDITION          |number id (               |end_loop then        |X
