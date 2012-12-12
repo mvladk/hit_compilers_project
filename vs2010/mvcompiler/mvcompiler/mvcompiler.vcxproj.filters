@@ -27,5 +27,8 @@
     <ClCompile Include="..\..\..\source files\util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source files\symbol.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

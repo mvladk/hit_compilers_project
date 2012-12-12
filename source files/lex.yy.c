@@ -1830,4 +1830,5 @@ int main() {
     log_file = fopen("log.txt", "w");
     parse_PROGRAM();
     fclose(log_file);
+    return 0;
 }

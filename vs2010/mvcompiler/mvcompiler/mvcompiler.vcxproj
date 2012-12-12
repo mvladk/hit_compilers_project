@@ -75,6 +75,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source files\lex.yy.c" />
     <ClCompile Include="..\..\..\source files\parser.c" />
+    <ClCompile Include="..\..\..\source files\symbol.c" />
     <ClCompile Include="..\..\..\source files\token.c" />
     <ClCompile Include="..\..\..\source files\util.c" />
   </ItemGroup>

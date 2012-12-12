@@ -2,6 +2,7 @@ start_prog
 
 real const b:=5;
 integer b__v,s__z;
+real a;
 ccc:exception
 
 start_com
@@ -10,7 +11,7 @@ loop if a == 2 then a := 2 + a else a := a + b end_if while a < 300 end_loop;
 embed 
 integer const z := 2
 start_com
-z := 10
+s__z := 10
 end_embed
 
 end_prog

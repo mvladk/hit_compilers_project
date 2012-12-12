@@ -1,3 +1,5 @@
+#ifndef TOKEN_HEADER
+#define TOKEN_HEADER
 typedef struct {
 	int type;
 	char *text;
@@ -35,3 +37,4 @@ void back_token();
 #define AR_OP 225
 #define IF 226
 #define CONST 227
+#endif

@@ -1,0 +1,8 @@
+DEFINITION_TYPE.type - inherited from TYPE.type, the type of the declared data
+TYPE.type - synthesized from token, whether the type was integer or real
+ID_LIST.type - inherited from DEFINITION_TYPE.type or ID_LIST_MAYBE.type, the type of variables in the ID_LIST
+ID_LIST_MAYBE.type - inherited from ID_LIST.type, the type of variables 
+EXPRESSION.type - synthesized from EXPERSSION_SIMPLE.type and EXPRESSION_MAYBE.type, the type of an expression
+EXPRESSION_SIMPLE.type - synthesized from token or from EXPRESSION.type, type of EXPRESSION_SIMPLE
+EXPRESSION_MAYBE.type - synthesized from epsilon or EXPRESSION.type, type of EXPRESSION_MAYBE
+

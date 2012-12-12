@@ -2,29 +2,53 @@ PROGRAM -> start_prog DEFINITIONS start_com COMMANDS end_prog
 DEFINITIONS -> DEFINITION DEFINITION_MAYBE
 DEFINITION_MAYBE -> eps
 DEFINITION_MAYBE -> ; DEFINITIONS
-DEFINITION -> TYPE DEFINITION_TYPE
-DEFINITION -> id : exception
-DEFINITION_TYPE -> ID_LIST
-DEFINITION_TYPE -> const id := number
-TYPE -> integer 
-TYPE -> real
-ID_LIST -> id ID_LIST_MAYBE
+DEFINITION -> TYPE {DEFINITION_TYPE.type = TYPE.type } DEFINITION_TYPE
+DEFINITION -> id {if (!insert(id, ERROR, EXCEPTION)) error() }  : exception
+DEFINITION_TYPE -> {ID_LIST.type = DEFINITION_TYPE.type } ID_LIST
+DEFINITION_TYPE -> const id  := number { if (!insert(id, DEFINITION_TYPE.type, CONSTANT)) 
+                                           error()
+                                         else if (DEFINITION_TYPE.type == int && number.type == real)
+                                           error() }
+TYPE -> integer { TYPE.type = int }
+TYPE -> real { TYPE.type = real }
+ID_LIST -> id { if (!insert(id, ID_LIST.type, VARIABLE)) error() } { ID_LIST_MAYBE.type = ID_LIST.type } ID_LIST_MAYBE
 ID_LIST_MAYBE -> eps
-ID_LIST_MAYBE -> , ID_LIST
+ID_LIST_MAYBE -> , id { if (!insert(id, ID_LIST.type, VARIABLE)) error() } {ID_LIST.type = ID_LIST_MAYBE.type } ID_LIST_MAYBE
 COMMANDS -> COMMAND COMMAND_MAYBE
 COMMAND_MAYBE -> eps
 COMMAND_MAYBE -> ; COMMANDS
-COMMAND -> id := EXPRESSION
+COMMAND -> id := EXPRESSION { if (!find(id)) {
+                                error();
+                              } else if (find(id).role != VAR) {
+                                error();
+                              } else if (find(id).type == INT && EXPRESSION.type == REAL) {
+                                error(); 
+                              } }
 COMMAND -> if CONDITION then COMMANDS else COMMANDS end_if
 COMMAND -> loop COMMANDS while CONDITION end_loop
-COMMAND -> embed DEFINITIONS start_com COMMANDS end_embed
-COMMAND -> raise id
-EXPRESSION -> EXPRESSION_SIMPLE EXPRESSION_MAYBE
-EXPRESSION_SIMPLE -> number
-EXPRESSION_SIMPLE -> id
-EXPRESSION_SIMPLE -> (EXPRESSION)
-EXPRESSION_MAYBE -> eps
-EXPRESSION_MAYBE -> ar_op EXPRESSION
-CONDITION -> EXPERSSION rel_op EXPRESSIOn
-
-
+COMMAND -> embed { head = make_table(head) } DEFINITIONS start_com COMMANDS { head = pop_table(head) } end_embed
+COMMAND -> raise id { if (!find(id)) {
+                        error();
+                      } else if (find(id).role != EXCEPTION) {
+                        error();
+                      } }
+EXPRESSION -> EXPRESSION_SIMPLE EXPRESSION_MAYBE { if (EXPRESSION_SIMPLE.type == REAL || EXPRESSION_MAYBE.type == REAL)
+                                                     EXPRESSION.type = REAL;
+                                                   else if (EXPRESSION_SIMPLE.type == INT && EXPRESSION_MAYBE.type == INT)
+                                                     EXPRESSION.type = INT;
+                                                   else if (EXPRESSION_MAYBE.type == EPSILON)
+                                                     EXPRESSION.type = EXPRESSION_SIMPLE.type;
+                                                   else 
+                                                     EXPRESSION.type = ERROR }
+EXPRESSION_SIMPLE -> number { EXPRESSION_SIMPLE.type = number.type }
+EXPRESSION_SIMPLE -> id { if (!find(id)) {
+                            error(); EXPRESSION_SIMPLE.type = ERROR;
+                          } else if (find(id).role == EXCEPTION) {
+                            error(); EXPRESSION_SIMPLE.type = ERROR; 
+                          } else {
+                            EXPRESSION_SIMPLE.type = find(id).type;
+                          } }
+EXPRESSION_SIMPLE -> (EXPRESSION) { EXPRESSION_SIMPLE.type = EXPRESSION.type } 
+EXPRESSION_MAYBE -> eps { EXPRESSION_MAYBE.type = EPSILON; }
+EXPRESSION_MAYBE -> ar_op EXPRESSION { EXPRESSION_MAYBE.type = EXPRESSION.type; }
+CONDITION -> EXPERSSION rel_op EXPRESSION

@@ -34,16 +34,17 @@ char *token_name(int token_type)
         case IF: return "IF" ;
         case CONST: return "CONST" ;
         case EOF: return "EOF";
+        default: return "UNDEFINED";
 	}
 }
 
-void match(int token_type)
+token match(int token_type)
 {
     extern FILE *log_file;
 	token t = next_token();
 	if (t.type != token_type) {
 		printf("At line %d - expected %s, got %s\n", t.line, token_name(token_type), token_name(t.type));
         fprintf(log_file, "At line %d - expected %s, got %s\n", t.line, token_name(token_type), token_name(t.type));      
-		return;
 	}
+    return t;
 }
