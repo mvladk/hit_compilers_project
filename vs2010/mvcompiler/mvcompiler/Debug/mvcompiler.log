@@ -1,12 +1,17 @@
-﻿Build started 12/12/2012 9:26:06 PM.
+﻿Build started 18/12/2012 12:53:35 AM.
      1>Project "C:\work\github\hit_compilers_project\vs2010\mvcompiler\mvcompiler\mvcompiler.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\mvcompiler.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt "..\..\..\source files\parser.c"
-         parser.c
-     1>c:\work\github\hit_compilers_project\source files\parser.c(313): warning C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(238) : see declaration of 'strdup'
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt "..\..\..\source files\lex.yy.c"
+         lex.yy.c
+     1>lex.yy.c(1740): warning C4013: 'exit' undefined; assuming extern returning int
+     1>lex.yy.c(1803): warning C4013: 'malloc' undefined; assuming extern returning int
+     1>lex.yy.c(1821): warning C4013: 'realloc' undefined; assuming extern returning int
+     1>lex.yy.c(1831): warning C4013: 'free' undefined; assuming extern returning int
+     1>exprs.lex(88): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(234) : see declaration of 'fopen'
+     1>exprs.lex(89): warning C4013: 'parse_PROGRAM' undefined; assuming extern returning int
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -29,4 +34,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.31
+Time Elapsed 00:00:00.35

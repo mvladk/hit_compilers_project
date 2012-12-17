@@ -478,7 +478,21 @@ static char *yy_last_accepting_cpos;
 char *yytext;
 #line 1 "exprs.lex"
 #define INITIAL 0
-#line 2 "exprs.lex"
+/**
+ * c/c++
+ *
+ * Art Brindatch(tm) : mvcompiler (http://art-brindatch.com)
+ * Copyright 2005-2012, Art Brindatch(Vladimir Karpov), Ltd. (http://art-brindatch.com)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright 2005-2013, Art Brindatch(Vladimir Karpov), Ltd. (http://art-brindatch.com)
+ * @link          http://art-brindatch.com mvcompiler(tm) Project
+ * @since         mvcompiler (tm) v 1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+#line 16 "exprs.lex"
    #include "token.h"
    void yyerror(char *s) {}
    int line_number = 1;
@@ -486,7 +500,7 @@ char *yytext;
 #define YY_NEVER_INTERACTIVE 1
 #define STR 1
 
-#line 490 "lex.yy.c"
+#line 504 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -637,10 +651,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 13 "exprs.lex"
+#line 27 "exprs.lex"
 
 
-#line 644 "lex.yy.c"
+#line 658 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -725,127 +739,127 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "exprs.lex"
+#line 29 "exprs.lex"
 line_number++; // comment
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 16 "exprs.lex"
+#line 30 "exprs.lex"
 line_number++;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 17 "exprs.lex"
+#line 31 "exprs.lex"
 return START_PROG;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 18 "exprs.lex"
+#line 32 "exprs.lex"
 return END_PROG;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "exprs.lex"
+#line 33 "exprs.lex"
 return START_COM;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 20 "exprs.lex"
+#line 34 "exprs.lex"
 return EXCEPTION;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "exprs.lex"
+#line 35 "exprs.lex"
 return CONST;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 22 "exprs.lex"
+#line 36 "exprs.lex"
 {return ASSIGN;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 23 "exprs.lex"
+#line 37 "exprs.lex"
 return INT;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "exprs.lex"
+#line 38 "exprs.lex"
 return REAL;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "exprs.lex"
+#line 39 "exprs.lex"
 return SEMICOLON;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 26 "exprs.lex"
+#line 40 "exprs.lex"
 return COMMA;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 27 "exprs.lex"
+#line 41 "exprs.lex"
 return COLON;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "exprs.lex"
+#line 42 "exprs.lex"
 return LEFT_BRACKET;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "exprs.lex"
+#line 43 "exprs.lex"
 return RIGHT_BRACKET;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "exprs.lex"
+#line 44 "exprs.lex"
 return IF;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 31 "exprs.lex"
+#line 45 "exprs.lex"
 return THEN;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 32 "exprs.lex"
+#line 46 "exprs.lex"
 return ELSE;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 33 "exprs.lex"
+#line 47 "exprs.lex"
 return WHILE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 34 "exprs.lex"
+#line 48 "exprs.lex"
 return END_LOOP;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 35 "exprs.lex"
+#line 49 "exprs.lex"
 return END_IF;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 36 "exprs.lex"
+#line 50 "exprs.lex"
 return LOOP;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 37 "exprs.lex"
+#line 51 "exprs.lex"
 return EMBED;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 38 "exprs.lex"
+#line 52 "exprs.lex"
 return END_EMBED;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 39 "exprs.lex"
+#line 53 "exprs.lex"
 return RAISE;
 	YY_BREAK
 /*
@@ -853,94 +867,94 @@ exit            return EXIT;
 */
 case 26:
 YY_RULE_SETUP
-#line 43 "exprs.lex"
+#line 57 "exprs.lex"
 { return REL_OP;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 44 "exprs.lex"
+#line 58 "exprs.lex"
 { return REL_OP;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 45 "exprs.lex"
+#line 59 "exprs.lex"
 { return REL_OP;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 46 "exprs.lex"
+#line 60 "exprs.lex"
 { return REL_OP;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 47 "exprs.lex"
+#line 61 "exprs.lex"
 { return REL_OP;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 48 "exprs.lex"
+#line 62 "exprs.lex"
 { return REL_OP;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 51 "exprs.lex"
+#line 65 "exprs.lex"
 {     return AR_OP;
                 }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 53 "exprs.lex"
+#line 67 "exprs.lex"
 {     return AR_OP;
                 }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 55 "exprs.lex"
+#line 69 "exprs.lex"
 {
 		          return REAL_LITERAL;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 58 "exprs.lex"
+#line 72 "exprs.lex"
 { 
                   return INT_LITERAL;
                 }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 62 "exprs.lex"
+#line 76 "exprs.lex"
 { 
                   return ID;
                 }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 65 "exprs.lex"
+#line 79 "exprs.lex"
 ; // whitespace
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 67 "exprs.lex"
+#line 81 "exprs.lex"
 { return *yytext; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 68 "exprs.lex"
+#line 82 "exprs.lex"
 {  printf("At Line %d - Bad Char %s\n", line_number, yytext);
                    fprintf(log_file, "At Line %d - Bad Char %s\n", line_number, yytext);
                    yyerror("Invalid character"); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(STR):
-#line 71 "exprs.lex"
+#line 85 "exprs.lex"
 return EOF;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 72 "exprs.lex"
+#line 86 "exprs.lex"
 ECHO;
 	YY_BREAK
-#line 944 "lex.yy.c"
+#line 958 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1824,7 +1838,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 72 "exprs.lex"
+#line 86 "exprs.lex"
 
 int main() {
     log_file = fopen("log.txt", "w");

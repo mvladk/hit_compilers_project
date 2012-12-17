@@ -1,3 +1,18 @@
+/**
+ * c/c++
+ *
+ * Art Brindatch(tm) : mvcompiler (http://art-brindatch.com)
+ * Copyright 2005-2012, Art Brindatch(Vladimir Karpov), Ltd. (http://art-brindatch.com)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright 2005-2013, Art Brindatch(Vladimir Karpov), Ltd. (http://art-brindatch.com)
+ * @link          http://art-brindatch.com mvcompiler(tm) Project
+ * @since         mvcompiler (tm) v 1.0.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+
 DEFINITION_TYPE.type - inherited from TYPE.type, the type of the declared data
 TYPE.type - synthesized from token, whether the type was integer or real
 ID_LIST.type - inherited from DEFINITION_TYPE.type or ID_LIST_MAYBE.type, the type of variables in the ID_LIST
