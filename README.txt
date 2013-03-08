@@ -2,7 +2,7 @@
  * c/c++
  *
  * Art Brindatch(tm) : mvcompiler (http://art-brindatch.com)
- * Copyright 2005-2012, Art Brindatch(Vladimir Karpov), Ltd. (http://art-brindatch.com)
+ * Copyright 2005-2013, Art Brindatch(Vladimir Karpov), Ltd. (http://art-brindatch.com)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
